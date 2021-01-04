@@ -11,18 +11,12 @@ import {
 
 import { PluginFunction } from "@graphql-codegen/plugin-helpers";
 
-type Definition = FragmentDefinitionNode | OperationDefinitionNode;
-
 function createHash(s: string, config: PluginConfig) {
     return crypto
         .createHash(config.algorithm || "sha256")
         .update(s, "utf8")
         .digest()
         .toString("hex");
-}
-
-function printDefinitions(definitions: (Definition | DocumentNode)[]) {
-    return definitions.map(print).join("\n");
 }
 
 const TYPENAME_FIELD: FieldNode = {
@@ -148,15 +142,7 @@ export function generateQueryIds(docs: DocumentNode[], config: PluginConfig) {
                         throw new Error("OperationDefinition missing name");
                     }
 
-                    const usedFragments = findUsedFragments(
-                        def,
-                        knownFragments,
-                    );
-
-                    const query = printDefinitions([
-                        ...Array.from(usedFragments.values()),
-                        def,
-                    ]);
+                    const query = print(doc);
 
                     const hash = createHash(query, config);
 
